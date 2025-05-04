@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Due2Me - Home</title>
+  <link rel="stylesheet" href="homeStyle.css">
+  <style>
+    
+    
+  </style>
+</head>
+<body>
+  <div class="content-wrapper">
+    <!-- App Name and Logo -->
+    <div class="header">
+      <img src="logo.png" alt="Due2Me Logo" class="logo">
+      <h1>Due2Me</h1>
+    </div>
+
+    <!-- About Section -->
+    <div class="about-section">
+      <h2>About</h2>
+      <p>
+        Due2Me is a simple yet powerful record-keeping tool designed for individuals who lend money to others for profit. 
+        It helps users track loans, manage repayments, and maintain organized financial records without relying on complex 
+        software or pen and paper that can easily be misplaced or forgotten.
+      </p>
+      <p>
+        With Due2Me, lenders can log and update loans anytime, from anywhere, using their smartphones. A built-in reminder 
+        system ensures that borrowers are notified when payments are due, making it easier to follow up. The app also allows 
+        users to track partial payments, set repayment terms, and generate reports for better financial management.
+      </p>
+    </div>
+
+    <!-- Main Buttons -->
+    <div class="button-container">
+      <button id="registerButton" class="btn btn-primary">Register New Loan</button>
+      <button id="viewActiveButton" class="btn btn-primary">View Active Loans</button>
+      <button id="viewPaidButton" class="btn btn-primary">View Paid Loans</button>
+      <button id="logoutButton" class="btn btn-danger">Logout</button>
+    </div>
+  </div>
+
+  <!-- Footer aligned with content width -->
+  <div class="footer">
+    <p>&copy; 2025 Due2Me. All rights reserved.</p>
+  </div>
+
+  <!-- Logout Confirmation Modal -->
+  <div id="logoutModal" class="modal-overlay">
+    <div class="modal-content">
+      <h3></h3>
+      <p>Are you sure you want to logout?</p>
+      <div class="modal-buttons">
+        <button id="confirmLogout" class="confirm-logout">Yes, Logout</button>
+        <button id="cancelLogout" class="cancel-logout">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Check disclaimer acceptance
+      if (!localStorage.getItem('disclaimerAccepted')) {
+        window.location.href = 'disclaimer.html';
+        return;
+      }
+
+      // Button event listeners
+      document.getElementById('registerButton').addEventListener('click', function() {
+        window.location.href = 'register.html';
+      });
+
+      document.getElementById('viewActiveButton').addEventListener('click', function() {
+        window.location.href = 'active.html';
+      });
+
+      document.getElementById('viewPaidButton').addEventListener('click', function() {
+        window.location.href = 'paid.html';
+      });
+
+      // Logout button with confirmation
+      const logoutButton = document.getElementById('logoutButton');
+      const logoutModal = document.getElementById('logoutModal');
+      const confirmLogout = document.getElementById('confirmLogout');
+      const cancelLogout = document.getElementById('cancelLogout');
+
+      logoutButton.addEventListener('click', function(e) {
+        e.preventDefault();
+        logoutModal.style.display = 'flex';
+      });
+
+      confirmLogout.addEventListener('click', function() {
+        // Clear authentication and disclaimer acceptance
+        localStorage.removeItem('disclaimerAccepted');
+        window.location.href = 'disclaimer.html';
+      });
+
+      cancelLogout.addEventListener('click', function() {
+        logoutModal.style.display = 'none';
+      });
+
+      // Close modal when clicking outside
+      logoutModal.addEventListener('click', function(e) {
+        if (e.target === logoutModal) {
+          logoutModal.style.display = 'none';
+        }
+      });
+    });
+  </script>
+</body>
+</html>

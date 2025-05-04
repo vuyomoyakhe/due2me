@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Due2Me - Disclaimer</title>
+  <link rel="stylesheet" href="disclaimerStyle.css">
+  <style>
+    
+  </style>
+</head>
+<body>
+  <div class="page-container">
+    <div class="container">
+      <!-- App Name and Logo -->
+      <div class="header">
+        <img src="logo.png" alt="App Logo" class="logo">
+        <h1>Due2Me</h1>
+      </div>
+
+      <!-- Disclaimer -->
+      <div class="disclaimer">
+        <h2>Disclaimer</h2>
+        <ul>
+          <li>This app is for demonstration purposes only.</li>
+          <li>All data entered is stored locally in your browser.</li>
+          <li>We do not collect or share your personal information.</li>
+          <li>Use this app at your own risk.</li>
+        </ul>
+        
+        <div class="agree-checkbox" style="margin-top: 20px;">
+          <input type="checkbox" id="agreeCheckbox">
+          <label for="agreeCheckbox">I have read and agree to the terms</label>
+        </div>
+      </div>
+
+      <!-- Buttons (hidden by default) -->
+      <div class="button-container" id="authButtons" style="display: none;">
+        <button id="loginButton" class="btn-primary">Log In</button>
+        <span style="margin: 0 10px;">or</span>
+        <a href="auth.html" class="signup-link">Sign Up</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer (now outside the white container) -->
+  <div class="footer">
+    <p>&copy; 2025 Due2Me. All rights reserved.</p>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const agreeCheckbox = document.getElementById('agreeCheckbox');
+      const authButtons = document.getElementById('authButtons');
+      
+      // Show/hide auth buttons based on checkbox
+      agreeCheckbox.addEventListener('change', function() {
+        authButtons.style.display = this.checked ? 'flex' : 'none';
+      });
+
+      // Login Button
+      document.getElementById('loginButton').addEventListener('click', function() {
+        localStorage.setItem('disclaimerAccepted', 'true');
+        window.location.href = 'home.html'; // Redirect to home page
+      });
+    });
+  </script>
+</body>
+</html>
