@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Due2Me - Active Loans</title>
+  <link rel="stylesheet" href="completedLoansStyle.css">
+</head>
+<body>
+  <div class="container">
+    <!-- App Name and Logo -->
+    <div class="header">
+      <img src="logo.png" alt="App Logo" class="logo">
+      <h1>Due2Me</h1>
+    </div>
+
+    <h2>Active Loans</h2>
+
+    <!-- Button Container -->
+    <div class="button-container">
+      <a href="home.html" class="nav-button">Back to Home</a>
+      <button class="action-button" id="markAsPaidButton" disabled>Mark as Paid</button>
+      <button class="action-button" id="topUpButton" disabled>Top Up</button>
+      <button class="action-button" id="payPortionButton" disabled>Pay Portion</button>
+      <a href="paid.html" class="nav-button">View Paid Loans</a>
+    </div>
+
+    <!-- Table Wrapper -->
+    <div class="table-wrapper">
+      <table id="activeLoansTable">
+        <thead>
+          <tr>
+            <th>Full Name</th>
+            <th>Loan Amount</th>
+            <th>Interest Rate</th>
+            <th>Total Repayment</th>
+            <th>Due Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Rows will be dynamically added here -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <p>&copy; 2025 Due2Me. All rights reserved.</p>
+    </div>
+  </div>
+
+  <!-- Modal for Top Up -->
+  <div id="topUpModal" class="modal">
+    <div class="modal-content">
+      <h3>Top Up Loan</h3>
+      <input type="number" id="topupAmount" placeholder="Top Up Amount">
+      <input type="number" id="topupInterestRate" placeholder="Interest Rate (%)">
+      <button onclick="calculateTopUp()">Calculate</button>
+      <div id="preview"></div>
+      <button onclick="updateRepayment()">Confirm Update</button>
+      <button onclick="closeModal()">Cancel</button>
+    </div>
+  </div>
+
+  <!-- Modal for Pay Portion -->
+  <div id="payPortionModal" class="modal">
+    <div class="modal-content">
+      <h3>Pay Portion</h3>
+      <input type="number" id="portionAmount" placeholder="Portion Amount">
+      <button onclick="payPortion()">Confirm Payment</button>
+      <button onclick="closeModal()">Cancel</button>
+    </div>
+  </div>
+
+  <script>
+    // Inline JavaScript for Active Loans Page
+    document.addEventListener('DOMContentLoaded', function () {
+      const activeLoansTable = document.getElementById('activeLoansTable');
+      const markAsPaidButton = document.getElementById('markAsPaidButton');
+      const topUpButton = document.getElementById('topUpButton');
+      const payPortionButton = document.getElementById('payPortionButton');
+
+      let selectedLoaneeIndex = null; // Track the selected loanee
+
+      // Load and display active loans
+      if (activeLoansTable) {
+        const loanees = JSON.parse(localStorage.getItem('loanees')) || [];
+        const tableBody = activeLoansTable.querySelector('tbody');
+
+        // Clear existing rows
+        tableBody.innerHTML = '';
+
+        // Add rows for active loans
+        loanees.forEach((loanee, index) => {
+          if (loanee.status === 'active') {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td>${loanee.fullName}</td>
+              <td>${loanee.loanAmount.toFixed(2)}</td>
+              <td>${loanee.interestRate}%</td>
+              <td>${loanee.totalRepayment.toFixed(2)}</td>
+              <td>${loanee.dueDate}</td>
+            `;
+
+            // Add click event to select/deselect the row
+            row.addEventListener('click', function () {
+              toggleLoaneeSelection(index, row);
+            });
+
+            tableBody.appendChild(row);
+          }
+        });
+      }
+
+      // Function to toggle loanee selection
+      function toggleLoaneeSelection(index, row) {
+        const rows = document.querySelectorAll('#activeLoansTable tbody tr');
+
+        // Deselect all rows
+        rows.forEach((r) => r.classList.remove('selected'));
+
+        if (selectedLoaneeIndex === index) {
+          // Deselect if the same row is clicked again
+          selectedLoaneeIndex = null;
+        } else {
+          // Select the new row
+          selectedLoaneeIndex = index;
+          row.classList.add('selected');
+        }
+
+        // Enable or disable buttons based on selection
+        markAsPaidButton.disabled = selectedLoaneeIndex === null;
+        topUpButton.disabled = selectedLoaneeIndex === null;
+        payPortionButton.disabled = selectedLoaneeIndex === null;
+      }
+
+      // Click outside the table to deselect
+      document.addEventListener('click', function (event) {
+        const isClickInsideTable = activeLoansTable.contains(event.target);
+        if (!isClickInsideTable) {
+          // Deselect the selected row
+          const rows = document.querySelectorAll('#activeLoansTable tbody tr');
+          rows.forEach((r) => r.classList.remove('selected'));
+          selectedLoaneeIndex = null;
+
+          // Disable buttons
+          markAsPaidButton.disabled = true;
+          topUpButton.disabled = true;
+          payPortionButton.disabled = true;
+        }
+      });
+
+      // Mark as Paid
+      markAsPaidButton.addEventListener('click', function () {
+        if (selectedLoaneeIndex !== null) {
+          markAsPaid(selectedLoaneeIndex);
+        }
+      });
+
+      // Top Up
+      topUpButton.addEventListener('click', function () {
+        if (selectedLoaneeIndex !== null) {
+          showTopUpModal(selectedLoaneeIndex);
+        }
+      });
+
+      // Pay Portion
+      payPortionButton.addEventListener('click', function () {
+        if (selectedLoaneeIndex !== null) {
+          showPayPortionModal(selectedLoaneeIndex);
+        }
+      });
+    });
+
+    // Function to mark a loan as paid
+    function markAsPaid(index) {
+      if (confirm('Are you sure you want to mark this loan as paid? This action cannot be undone.')) {
+        let loanees = JSON.parse(localStorage.getItem('loanees')) || [];
+
+        // Update the loanee's status to "paid" and record the payment date
+        loanees[index].status = 'paid';
+        loanees[index].paymentDate = new Date().toLocaleDateString();
+
+        // Save the updated list to localStorage
+        localStorage.setItem('loanees', JSON.stringify(loanees));
+
+        // Refresh the page to update the table
+        window.location.reload();
+      }
+    }
+
+    // Modal functionality
+    let currentIndex = null;
+
+    function showTopUpModal(index) {
+      currentIndex = index;
+      document.getElementById('topUpModal').style.display = 'flex';
+    }
+
+    function showPayPortionModal(index) {
+      currentIndex = index;
+      document.getElementById('payPortionModal').style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('topUpModal').style.display = 'none';
+      document.getElementById('payPortionModal').style.display = 'none';
+    }
+
+    function calculateTopUp() {
+      const topupAmount = parseFloat(document.getElementById('topupAmount').value);
+      const topupInterestRate = parseFloat(document.getElementById('topupInterestRate').value);
+
+      if (isNaN(topupAmount) || isNaN(topupInterestRate)) {
+        alert('Please enter valid numbers for Top Up Amount and Interest Rate.');
+        return;
+      }
+
+      const newRepayment = topupAmount + (topupAmount * (topupInterestRate / 100));
+      document.getElementById('preview').innerHTML = `
+        <strong>New Total Repayment:</strong> ${newRepayment.toFixed(2)}<br>
+      `;
+    }
+
+    function updateRepayment() {
+      if (confirm('Are you sure you want to update the total repayment?')) {
+        const topupAmount = parseFloat(document.getElementById('topupAmount').value);
+        const topupInterestRate = parseFloat(document.getElementById('topupInterestRate').value);
+
+        if (isNaN(topupAmount) || isNaN(topupInterestRate)) {
+          alert('Please enter valid numbers for Top Up Amount and Interest Rate.');
+          return;
+        }
+
+        const newRepayment = topupAmount + (topupAmount * (topupInterestRate / 100));
+        let loanees = JSON.parse(localStorage.getItem('loanees')) || [];
+        loanees[currentIndex].totalRepayment += newRepayment;
+        localStorage.setItem('loanees', JSON.stringify(loanees));
+
+        closeModal();
+        window.location.reload();
+      }
+    }
+
+    function payPortion() {
+      const portionAmount = parseFloat(document.getElementById('portionAmount').value);
+
+      if (isNaN(portionAmount) || portionAmount <= 0) {
+        alert('Please enter a valid portion amount.');
+        return;
+      }
+
+      let loanees = JSON.parse(localStorage.getItem('loanees')) || [];
+      if (portionAmount > loanees[currentIndex].totalRepayment) {
+        alert('Portion amount cannot be greater than the total repayment.');
+        return;
+      }
+
+      loanees[currentIndex].totalRepayment -= portionAmount;
+      localStorage.setItem('loanees', JSON.stringify(loanees));
+
+      closeModal();
+      window.location.reload();
+    }
+  </script>
+</body>
+</html>

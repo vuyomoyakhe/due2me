@@ -1,0 +1,157 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Due2Me - Sign Up/Login</title>
+  <link rel="stylesheet" href="authStyle.css">
+  <!-- Include Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <img src="logo.png" alt="Due2Me Logo" class="logo">
+      <h1>Welcome to Due2Me</h1>
+      <p class="subtitle">Manage your loans efficiently</p>
+    </div>
+
+    <form id="authForm">
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required minlength="6">
+        <div id="emailError" class="error-message"></div>
+      </div>
+
+      <button type="submit" class="btn-primary" id="submitBtn">Sign Up</button>
+    </form>
+
+    <div class="social-login">
+      <div class="social-divider">Or continue with</div>
+      
+      <div class="social-buttons">
+        <button class="social-btn" id="googleBtn">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google" class="social-icon">
+          Google
+        </button>
+        
+        <button class="social-btn" id="facebookBtn">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg" alt="Facebook" class="social-icon">
+          Facebook
+        </button>
+        
+        <button class="social-btn" id="appleBtn">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple" class="social-icon">
+          Apple
+        </button>
+      </div>
+    </div>
+
+    <div class="footer">
+      <p>Already have an account? <a href="#" id="toggleAuth">Log In</a></p>
+    </div>
+  </div>
+
+  <script>
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_AUTH_DOMAIN",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_STORAGE_BUCKET",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    // DOM elements
+    const authForm = document.getElementById('authForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const toggleAuth = document.getElementById('toggleAuth');
+    const googleBtn = document.getElementById('googleBtn');
+    const facebookBtn = document.getElementById('facebookBtn');
+    const appleBtn = document.getElementById('appleBtn');
+    const emailError = document.getElementById('emailError');
+
+    let isLoginMode = false;
+
+    // Toggle between Sign Up and Login
+    toggleAuth.addEventListener('click', (e) => {
+      e.preventDefault();
+      isLoginMode = !isLoginMode;
+      
+      if (isLoginMode) {
+        submitBtn.textContent = 'Log In';
+        toggleAuth.textContent = 'Create an account';
+        document.querySelector('.footer p').textContent = "Don't have an account? ";
+      } else {
+        submitBtn.textContent = 'Sign Up';
+        toggleAuth.textContent = 'Log In';
+        document.querySelector('.footer p').textContent = 'Already have an account? ';
+      }
+    });
+
+    // Email/Password authentication
+    authForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      try {
+        if (isLoginMode) {
+          await auth.signInWithEmailAndPassword(email, password);
+        } else {
+          await auth.createUserWithEmailAndPassword(email, password);
+        }
+        window.location.href = 'home.html';
+      } catch (error) {
+        emailError.textContent = error.message;
+      }
+    });
+
+    // Google authentication
+    googleBtn.addEventListener('click', async () => {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      try {
+        await auth.signInWithPopup(provider);
+        window.location.href = 'home.html';
+      } catch (error) {
+        emailError.textContent = error.message;
+      }
+    });
+
+    // Facebook authentication
+    facebookBtn.addEventListener('click', async () => {
+      const provider = new firebase.auth.FacebookAuthProvider();
+      try {
+        await auth.signInWithPopup(provider);
+        window.location.href = 'home.html';
+      } catch (error) {
+        emailError.textContent = error.message;
+      }
+    });
+
+    // Apple authentication
+    appleBtn.addEventListener('click', async () => {
+      const provider = new firebase.auth.OAuthProvider('apple.com');
+      try {
+        await auth.signInWithPopup(provider);
+        window.location.href = 'home.html';
+      } catch (error) {
+        emailError.textContent = error.message;
+      }
+    });
+  </script>
+</body>
+</html>

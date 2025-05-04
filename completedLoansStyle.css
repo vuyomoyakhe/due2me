@@ -1,0 +1,228 @@
+/* completedLoansStyle.css */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.container {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  max-width: 800px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 90vh;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.logo {
+  width: 250px;
+  height: 75px;
+  margin-bottom: 10px;
+}
+
+h1 {
+  color: #333;
+  margin: 0;
+}
+
+h2 {
+  color: #555;
+  margin-bottom: 20px;
+}
+
+.button-container {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.nav-button, .action-button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  text-decoration: none;
+  text-align: center;
+}
+
+/* Ensure all buttons in container have same style */
+.button-container a.nav-button {
+  display: inline-block;
+  line-height: normal;
+  vertical-align: middle;
+}
+
+.nav-button {
+  background-color: #007bff;
+  color: white;
+}
+
+.nav-button:hover {
+  background-color: #0056b3;
+}
+
+.action-button {
+  background-color: #28a745;
+  color: white;
+}
+
+.action-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.action-button:hover:not(:disabled) {
+  background-color: #218838;
+}
+
+#clearAllButton {
+  background-color: #ffc107;
+  color: black;
+}
+
+#clearAllButton:hover {
+  background-color: #e0a800;
+}
+
+/* Table Wrapper for Scroll */
+.table-wrapper {
+  max-height: 400px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-top: 20px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+th {
+  background-color: #f8f9fa;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+tr.selected {
+  background-color: #d1ecf1;
+}
+
+tr:hover {
+  background-color: #f1f1f1;
+}
+
+.action-button {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-right: 5px;
+}
+
+.action-button:hover {
+  background-color: #c82333;
+}
+
+/* Modal Styles */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+  width: 100%;
+}
+
+.modal-content h3 {
+  margin-top: 0;
+}
+
+.modal-content button {
+  padding: 8px 16px;
+  margin-right: 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.modal-content .confirm-button {
+  background-color: #28a745;
+  color: white;
+}
+
+.modal-content .cancel-button {
+  background-color: #dc3545;
+  color: white;
+}
+
+.footer {
+  margin-top: auto;
+  color: #777;
+  font-size: 14px;
+  text-align: center;
+  padding: 10px 0;
+}
+/* Additional inline styles for footer positioning */
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  position: relative;
+  padding-bottom: 60px; /* Space for footer */
+}
+
+.page-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
+  padding: 15px 0;
+  background-color: #f4f4f4;
+}

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Due2Me - Register New Loanee</title>
+  <link rel="stylesheet" href="registerStyle.css">
+</head>
+<body>
+  <div class="container">
+    <!-- App Name and Logo -->
+    <div class="header">
+      <img src="logo.png" alt="App Logo" class="logo">
+      <h1>Due2Me</h1>
+    </div>
+
+    <!-- Form to Add Client -->
+    <form id="loaneeForm">
+      <h2>Register New Client</h2>
+      <label for="fullName">Full Name:</label>
+      <input type="text" id="fullName" required>
+
+      <label for="location">Address:</label>
+      <input type="text" id="address" required>
+
+      <label for="phoneNumber">Phone Number:</label>
+      <input type="tel" id="phoneNumber" required>
+
+      <label for="idPhoto">Upload Photo (Optional):</label>
+      <input type="file" id="idPhoto" accept="image/*">
+
+      <label for="loanAmount">Loan Amount:</label>
+      <input type="number" id="loanAmount" required>
+
+      <label for="interestRate">Interest:</label>
+      <select id="interestRate">
+        <option value="0">No Interest</option>
+        <option value="10">10%</option>
+        <option value="20">20%</option>
+        <option value="30">30%</option>
+        <option value="40">40%</option>
+        <option value="50">50%</option>
+        <option value="custom">Custom</option>
+      </select>
+
+      <!-- Custom Interest Rate Input (Optional) -->
+      <div id="customInterestRateContainer" style="display: none;">
+        <label for="customInterestRate">Custom Interest Rate (0-100):</label>
+        <input type="number" id="customInterestRate" min="1" max="100">
+      </div>
+
+      <label for="dueDate">Due Date:</label>
+      <input type="date" id="dueDate" required>
+
+      <button type="submit">Register Client</button>
+    </form>
+
+    <!-- Preview Dialog Box -->
+    <div id="previewDialog" class="dialog">
+      <div class="dialog-content">
+        <h2>Please Confirm Details</h2>
+        <p><strong>Full Name:</strong> <span id="previewFullName"></span></p>
+        <p><strong>Address:</strong> <span id="previewAddress"></span></p>
+        <p><strong>Phone Number:</strong> <span id="previewPhoneNumber"></span></p>
+        <p><strong>Loan Amount:</strong> <span id="previewLoanAmount"></span></p>
+        <p><strong>Interest Rate:</strong> <span id="previewInterestRate"></span></p>
+        <p><strong>Total Repayment:</strong> <span id="previewTotalRepayment"></span></p>
+        <p><strong>Due Date:</strong> <span id="previewDueDate"></span></p>
+
+        <!-- Confirmation Buttons -->
+        <button id="confirmButton">Confirm</button>
+        <button id="cancelButton">Cancel</button>
+      </div>
+    </div>
+
+    <!-- Button to Navigate to Home Page -->
+    <a href="home.html" class="nav-button">Back to Home</a>
+    
+    <!-- Footer -->
+    <div class="footer">
+      <p>&copy; 2025 Due2Me. All rights reserved.</p>
+    </div>
+  </div>
+
+  <script>
+    // Inline JavaScript for Register New Page
+    document.addEventListener('DOMContentLoaded', function () {
+      const loaneeForm = document.getElementById('loaneeForm');
+      const interestRateSelect = document.getElementById('interestRate');
+      const customInterestRateContainer = document.getElementById('customInterestRateContainer');
+      const customInterestRateInput = document.getElementById('customInterestRate');
+      const previewDialog = document.getElementById('previewDialog');
+      const confirmButton = document.getElementById('confirmButton');
+      const cancelButton = document.getElementById('cancelButton');
+
+      let loaneeData = {}; // To store temporary loanee data
+
+      // Show/hide custom interest rate input based on dropdown selection
+      if (interestRateSelect) {
+        interestRateSelect.addEventListener('change', function () {
+          if (this.value === 'custom') {
+            customInterestRateContainer.style.display = 'block';
+          } else {
+            customInterestRateContainer.style.display = 'none';
+          }
+        });
+      }
+
+      if (loaneeForm) {
+        // Handle form submission
+        loaneeForm.addEventListener('submit', function (e) {
+          e.preventDefault();
+
+          // Get form values
+          loaneeData.fullName = document.getElementById('fullName').value;
+          loaneeData.address = document.getElementById('address').value;
+          loaneeData.phoneNumber = document.getElementById('phoneNumber').value;
+          loaneeData.loanAmount = parseFloat(document.getElementById('loanAmount').value);
+          loaneeData.dueDate = document.getElementById('dueDate').value;
+
+          // Get interest rate
+          if (interestRateSelect.value === 'custom') {
+            loaneeData.interestRate = parseFloat(customInterestRateInput.value);
+
+            // Validate custom interest rate
+            if (isNaN(loaneeData.interestRate)) {
+              alert('Please enter a valid number for the custom interest rate.');
+              return;
+            }
+            if (loaneeData.interestRate < 1 || loaneeData.interestRate > 100) {
+              alert('Custom interest rate must be between 1% and 100%.');
+              return;
+            }
+          } else {
+            loaneeData.interestRate = parseFloat(interestRateSelect.value);
+          }
+
+          // Calculate total repayment
+          loaneeData.totalRepayment = loaneeData.loanAmount + (loaneeData.loanAmount * (loaneeData.interestRate / 100));
+
+          // Display preview in dialog box
+          document.getElementById('previewFullName').textContent = loaneeData.fullName;
+          document.getElementById('previewAddress').textContent = loaneeData.address;
+          document.getElementById('previewPhoneNumber').textContent = loaneeData.phoneNumber;
+          document.getElementById('previewLoanAmount').textContent = loaneeData.loanAmount.toFixed(2);
+          document.getElementById('previewInterestRate').textContent = `${loaneeData.interestRate}%`;
+          document.getElementById('previewTotalRepayment').textContent = loaneeData.totalRepayment.toFixed(2);
+          document.getElementById('previewDueDate').textContent = loaneeData.dueDate;
+
+          // Show preview dialog
+          previewDialog.style.display = 'flex';
+        });
+      }
+
+      // Confirm Button: Save data and reset form
+      if (confirmButton) {
+        confirmButton.addEventListener('click', function () {
+          // Save loanee to localStorage
+          let loanees = JSON.parse(localStorage.getItem('loanees')) || [];
+          loanees.push({ ...loaneeData, status: 'active' });
+          localStorage.setItem('loanees', JSON.stringify(loanees));
+
+          // Clear the form and hide dialog
+          loaneeForm.reset();
+          previewDialog.style.display = 'none';
+          customInterestRateContainer.style.display = 'none';
+          alert('Loanee details saved successfully!');
+        });
+      }
+
+      // Cancel Button: Hide dialog and allow edits
+      if (cancelButton) {
+        cancelButton.addEventListener('click', function () {
+          previewDialog.style.display = 'none';
+        });
+      }
+    });
+  </script>
+</body>
+</html>

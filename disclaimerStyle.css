@@ -1,0 +1,116 @@
+
+
+/* disclaimerStyle.css */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  .container {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    max-width: 400px;
+  }
+  
+  .header {
+    margin-bottom: 20px;
+  }
+  
+  .logo {
+    width: 250px;
+    height: 75px;
+    margin-bottom: 10px;
+  }
+  
+  h1 {
+    color: #333;
+    margin: 0;
+  }
+  
+  .disclaimer {
+    text-align: left;
+    margin-bottom: 20px;
+  }
+  
+  .disclaimer h2 {
+    color: #555;
+    margin-bottom: 10px;
+  }
+  
+  .disclaimer ul {
+    list-style-type: disc;
+    padding-left: 20px;
+  }
+  
+  .disclaimer li {
+    margin-bottom: 10px;
+    color: #666;
+  }
+  
+  .button-container {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  
+  button {
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  #loginButton {
+    background-color: #007bff;
+  }
+  
+  #agreeButton {
+    background-color: #28a745;
+  }
+  
+  button:hover {
+    opacity: 0.9;
+  }
+  
+  .footer {
+    margin-top: 30px;
+    color: #777;
+    font-size: 14px;
+  }
+  /* Additional inline styles for footer positioning */
+  body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    position: relative;
+    padding-bottom: 60px; /* Space for footer */
+  }
+  
+  .page-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  }
+  
+  .footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+    padding: 15px 0;
+    background-color: #f4f4f4;
+  }

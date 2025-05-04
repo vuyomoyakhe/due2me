@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Due2Me - Completed Loans</title>
+  <link rel="stylesheet" href="completedLoansStyle.css">
+  <!-- Include html2canvas and jspdf libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <!-- App Name and Logo -->
+    <div class="header">
+      <img src="logo.png" alt="App Logo" class="logo">
+      <h1>Due2Me</h1>
+    </div>
+
+    <h2>Completed Loans</h2>
+
+    <!-- Button Container -->
+    <div class="button-container">
+      <a href="home.html" class="nav-button">Back to Home</a>
+      <a href="active.html" class="nav-button">Active Loans</a>
+      <button class="action-button" id="downloadButton">Download List</button>
+      <button class="action-button" id="removeButton" disabled>Remove Selected</button>
+      <button id="clearAllButton" class="action-button">Clear All</button>
+    </div>
+
+    <!-- Table Wrapper -->
+    <div class="table-wrapper">
+      <table id="completedLoansTable">
+        <thead>
+          <tr>
+            <th>Full Name</th>
+            <th>Loan Amount</th>
+            <th>Interest Rate</th>
+            <th>Total Repayment</th>
+            <th>Payment Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Rows will be dynamically added here -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <p>&copy; 2025 Due2Me. All rights reserved.</p>
+    </div>
+  </div>
+
+  <!-- Confirmation Modal -->
+  <div id="confirmModal" class="modal">
+    <div class="modal-content">
+      <h3>Confirm Action</h3>
+      <p id="modalMessage">Are you sure you want to perform this action?</p>
+      <button class="confirm-button" id="modalConfirm">Confirm</button>
+      <button class="cancel-button" onclick="closeModal()">Cancel</button>
+    </div>
+  </div>
+
+  <script>
+    // Inline JavaScript for Completed Loans Page
+    document.addEventListener('DOMContentLoaded', function () {
+      const completedLoansTable = document.getElementById('completedLoansTable');
+      const downloadButton = document.getElementById('downloadButton');
+      const removeButton = document.getElementById('removeButton');
+      const clearAllButton = document.getElementById('clearAllButton');
+      const confirmModal = document.getElementById('confirmModal');
+      const modalConfirm = document.getElementById('modalConfirm');
+      const modalMessage = document.getElementById('modalMessage');
+
+      let selectedLoanIndex = null;
+      let currentAction = null;
+
+      // Load and display completed loans
+      function loadCompletedLoans() {
+        const loanees = JSON.parse(localStorage.getItem('loanees')) || [];
+        const tableBody = completedLoansTable.querySelector('tbody');
+
+        // Clear existing rows
+        tableBody.innerHTML = '';
+
+        // Add rows for completed loans
+        loanees.forEach((loanee, index) => {
+          if (loanee.status === 'paid') {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td>${loanee.fullName}</td>
+              <td>${loanee.loanAmount.toFixed(2)}</td>
+              <td>${loanee.interestRate}%</td>
+              <td>${loanee.totalRepayment.toFixed(2)}</td>
+              <td>${loanee.paymentDate || 'N/A'}</td>
+            `;
+
+            // Add click event to select/deselect the row
+            row.addEventListener('click', function() {
+              toggleRowSelection(index, row);
+            });
+
+            tableBody.appendChild(row);
+          }
+        });
+      }
+
+      // Toggle row selection
+      function toggleRowSelection(index, row) {
+        const rows = document.querySelectorAll('#completedLoansTable tbody tr');
+        
+        // Deselect all rows
+        rows.forEach(r => r.classList.remove('selected'));
+        
+        if (selectedLoanIndex === index) {
+          // Deselect if same row clicked
+          selectedLoanIndex = null;
+        } else {
+          // Select new row
+          selectedLoanIndex = index;
+          row.classList.add('selected');
+        }
+        
+        // Update button state
+        removeButton.disabled = selectedLoanIndex === null;
+      }
+
+      // Click outside table to deselect
+      document.addEventListener('click', function(event) {
+        if (!completedLoansTable.contains(event.target)) {
+          const rows = document.querySelectorAll('#completedLoansTable tbody tr');
+          rows.forEach(r => r.classList.remove('selected'));
+          selectedLoanIndex = null;
+          removeButton.disabled = true;
+        }
+      });
+
+      // Download list as PDF
+      downloadButton.addEventListener('click', function() {
+        const element = document.getElementById('completedLoansTable');
+        html2canvas(element).then((canvas) => {
+          const imgData = canvas.toDataURL('image/png');
+          const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
+          const imgProps = pdf.getImageProperties(imgData);
+          const pdfWidth = pdf.internal.pageSize.getWidth();
+          const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+          pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+          pdf.save('completed-loans-list.pdf');
+        });
+      });
+
+      // Remove selected loan
+      removeButton.addEventListener('click', function() {
+        if (selectedLoanIndex !== null) {
+          currentAction = 'remove';
+          modalMessage.textContent = 'Are you sure you want to remove this completed loan?';
+          confirmModal.style.display = 'flex';
+        }
+      });
+
+      // Clear all completed loans
+      clearAllButton.addEventListener('click', function() {
+        currentAction = 'clearAll';
+        modalMessage.textContent = 'Are you sure you want to clear ALL completed loans? This cannot be undone!';
+        confirmModal.style.display = 'flex';
+      });
+
+      // Confirm modal action
+      modalConfirm.addEventListener('click', function() {
+        const loanees = JSON.parse(localStorage.getItem('loanees')) || [];
+        
+        if (currentAction === 'remove' && selectedLoanIndex !== null) {
+          // Remove selected loan
+          loanees.splice(selectedLoanIndex, 1);
+          localStorage.setItem('loanees', JSON.stringify(loanees));
+          loadCompletedLoans();
+        } else if (currentAction === 'clearAll') {
+          // Clear all completed loans
+          const activeLoanees = loanees.filter(loanee => loanee.status !== 'paid');
+          localStorage.setItem('loanees', JSON.stringify(activeLoanees));
+          loadCompletedLoans();
+        }
+        
+        closeModal();
+      });
+
+      // Close modal
+      window.closeModal = function() {
+        confirmModal.style.display = 'none';
+        currentAction = null;
+      }
+
+      // Initial load
+      loadCompletedLoans();
+    });
+  </script>
+</body>
+</html>
