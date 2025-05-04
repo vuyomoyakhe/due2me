@@ -62,8 +62,8 @@
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       // Check disclaimer acceptance
-      if (!localStorage.getItem('disclaimerAccepted')) {
-        window.location.href = 'disclaimer.html';
+      if (!localStorage.getItem('indexAccepted')) {
+        window.location.href = 'index.html';
         return;
       }
 
@@ -93,7 +93,7 @@
 
       confirmLogout.addEventListener('click', function() {
         // Clear authentication and disclaimer acceptance
-        localStorage.removeItem('disclaimerAccepted');
+        localStorage.removeItem('indexAccepted');
         window.location.href = 'index.html';
       });
 
